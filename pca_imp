@@ -1,0 +1,66 @@
+Before plotting the words, you need to first be able to reduce each word vector with PCA into 2 dimensions and then plot it. The steps to compute PCA are as follows:
+
+Mean normalize the data
+Compute the covariance matrix of your data ( Σ ).
+Compute the eigenvectors and the eigenvalues of your covariance matrix
+Multiply the first K eigenvectors by your normalized data. The transformation should look something as follows:
+
+
+You will write a program that takes in a data set where each row corresponds to a word vector.
+
+The word vectors are of dimension 300.
+Use PCA to change the 300 dimensions to n_components dimensions.
+The new matrix should be of dimension m, n_componentns.
+First de-mean the data
+Get the eigenvalues using linalg.eigh. Use eigh rather than eig since R is symmetric. The performance gain when using eigh instead of eig is substantial.
+Sort the eigenvectors and eigenvalues by decreasing order of the eigenvalues.
+Get a subset of the eigenvectors (choose how many principle components you want to use using n_components).
+Return the new transformation of the data by multiplying the eigenvectors with the original data.
+
+
+
+
+def compute_pca(X, n_components=2):
+    """
+    Input: 
+        X: of dimension (m,n) where each row corresponds to a word vector
+        n_components: Number of components you want to keep.
+    Output: 
+        X_reduced: data transformed in 2 dims/columns + regenerated original data
+    pass in: data as 2D NumPy array
+    """
+    
+    
+    # mean center the data
+    X_demeaned = X - np.mean(X.T, axis=1)
+    
+    # calculate the covariance matrix
+    covariance_matrix = np.cov(X_demeaned.T, rowvar=True)
+    
+    # calculate eigenvectors & eigenvalues of the covariance matrix
+    eigen_vals, eigen_vecs = np.linalg.eigh(covariance_matrix)
+    
+    # sort eigenvalue in decreasing order (get the indices from the sort)
+    idx_sorted = np.argsort(eigen_vals)
+    
+    # reverse the order so that it's from highest to lowest.
+    idx_sorted_decreasing = idx_sorted[::-1]
+
+    # sort the eigen values by idx_sorted_decreasing
+    eigen_vals_sorted = eigen_vals[idx_sorted_decreasing]
+
+    # sort eigenvectors using the idx_sorted_decreasing indices
+    eigen_vecs_sorted = eigen_vecs[:, idx_sorted_decreasing]
+    
+    # select the first n eigenvectors (n is desired dimension
+    # of rescaled data array, or dims_rescaled_data)
+    eigen_vecs_subset = eigen_vecs_sorted[:, :n_components]
+    
+    # transform the data by multiplying the transpose of the eigenvectors#
+    # with the transpose of the de-meaned data 
+    # Then take the transpose of that product.
+    X_reduced = np.dot(eigen_vecs_subset.T, X_demeaned.T).T
+    
+    ### END CODE HERE ###
+    
+    return X_reduced
