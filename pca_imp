@@ -5,7 +5,7 @@ Compute the covariance matrix of your data ( Σ ).
 Compute the eigenvectors and the eigenvalues of your covariance matrix
 Multiply the first K eigenvectors by your normalized data. The transformation should look something as follows:
 
-
+######################################################################description######################################
 You will write a program that takes in a data set where each row corresponds to a word vector.
 
 The word vectors are of dimension 300.
@@ -19,6 +19,24 @@ Return the new transformation of the data by multiplying the eigenvectors with t
 
 
 
+#################################################################helper fxns::##################################################
+
+
+Use numpy.mean(a,axis=None) : If you set axis = 0, you take the mean for each column. If you set axis = 1, you take the mean for each row. Remember that each row is a word vector, and the number of columns are the number of dimensions in a word vector.
+Use numpy.cov(m, rowvar=True) . This calculates the covariance matrix. By default rowvar is True. From the documentation: "If rowvar is True (default), then each row represents a variable, with observations in the columns." In our case, each row is a word vector observation, and each column is a feature (variable).
+Use numpy.linalg.eigh(a, UPLO='L')
+Use numpy.argsort sorts the values in an array from smallest to largest, then returns the indices from this sort.
+In order to reverse the order of a list, you can use: x[::=1].
+To apply the sorted indices to eigenvalues, you can use this format x[indices_sorted].
+When applying the sorted indices to eigen vectors, note that each column represents an eigenvector. In order to preserve the rows but sort on the columns, you can use this format x[:,indices_sorted]
+To transform the data using a subset of the most relevant principle components, take the matrix multiplication of the eigenvectors with the original data.
+The data is of shape (n_observations, n_features).
+The subset of eigenvectors are in a matrix of shape (n_features, n_components).
+To multiply these together, take the transposes of both the eigenvectors (n_components, n_features) and the data (n_features, n_observations).
+The product of these two has dimensions (n_components,n_observations). Take its transpose to get the shape (n_observations, n_components).
+
+
+################################################code##############################################################
 
 def compute_pca(X, n_components=2):
     """
